@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
 
   }
   body {
-    background-color: black;
+    background-color: #44C662;
     color: white;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
@@ -28,7 +28,7 @@ const Wrapper = styled.div`
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const init = async () => {
-    // await auth.authStateReady();
+    await auth.authStateReady();
     setIsLoading(false);
   };
 

@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import styled from "styled-components";
+import { createUserWithEmailAndPassword, updateProfile } from "@firebase/auth";
+import { auth } from "../firebase";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -12,6 +15,7 @@ const Wrapper = styled.div`
 `;
 
 const Form = styled.form`
+  margin-top: 5rem;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -32,6 +36,11 @@ const Input = styled.input`
   }
 `;
 
+const Title = styled.h1`
+  font-weight: 700;
+  font-size: 2rem;
+`;
+
 const Error = styled.span`
   font-weight: 600;
   color: tomato;
@@ -44,19 +53,36 @@ interface ICreateAccountForm {
 }
 
 export default function CreateAccount() {
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ICreateAccountForm>();
 
-  const onValid = (validData: ICreateAccountForm) => {
-    console.log(validData);
+  const onValid = async (validData: ICreateAccountForm) => {
+    const { email, name, password } = validData;
     try {
       // create an account
       // set the name of the user
       // redirect to the home page
+
+      setIsLoading(true);
+      const credentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      console.log(credentials.user);
+
+      await updateProfile(credentials.user, {
+        displayName: name,
+      });
+
+      navigate("/");
     } catch (error) {
       // setError
     } finally {
@@ -66,6 +92,7 @@ export default function CreateAccount() {
 
   return (
     <Wrapper>
+      <Title>Join Lutwitter</Title>
       <Form onSubmit={handleSubmit(onValid)}>
         <Input
           placeholder="Name"
