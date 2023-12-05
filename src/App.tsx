@@ -21,8 +21,12 @@ const GlobalStyle = createGlobalStyle`
 
 const Wrapper = styled.div`
   height: 100vh;
+  width: 560px;
   display: flex;
+  align-items: center;
   justify-content: center;
+  flex-direction: column;
+  margin: 0 auto;
 `;
 
 function App() {

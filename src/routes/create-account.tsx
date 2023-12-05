@@ -1,60 +1,29 @@
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useNavigate, Link } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
-import styled from "styled-components";
 import { createUserWithEmailAndPassword, updateProfile } from "@firebase/auth";
 import { auth } from "../firebase";
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 480px;
-  padding: 5rem 0;
-`;
-
-const Form = styled.form`
-  margin-top: 5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: none;
-  font-size: 16px;
-  &[type="submit"] {
-    cursor: pointer;
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-`;
-
-const Title = styled.h1`
-  font-weight: 700;
-  font-size: 2rem;
-`;
-
-const Error = styled.span`
-  font-weight: 600;
-  color: tomato;
-`;
+import {
+  Error,
+  Form,
+  Input,
+  Switcher,
+  Title,
+  Wrapper,
+} from "../components/auth-components";
+import { FirebaseError } from "@firebase/app";
 
 interface ICreateAccountForm {
   name: string;
   email: string;
   password: string;
+  error?: string;
 }
 
 export default function CreateAccount() {
   const navigate = useNavigate();
 
+  const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -62,8 +31,10 @@ export default function CreateAccount() {
     formState: { errors },
   } = useForm<ICreateAccountForm>();
 
-  const onValid = async (validData: ICreateAccountForm) => {
+  const onValid: SubmitHandler<ICreateAccountForm> = async (validData) => {
     const { email, name, password } = validData;
+    setErrorMsg("");
+
     try {
       // create an account
       // set the name of the user
@@ -83,6 +54,13 @@ export default function CreateAccount() {
       navigate("/");
     } catch (error) {
       // setError
+      if (error instanceof FirebaseError) {
+        setErrorMsg(error.message);
+        // setError("error", {
+        //   type: error.code,
+        //   message: error.message,
+        // }); 추후에 더 알아보기!
+      }
     } finally {
       setIsLoading(false);
     }
@@ -105,6 +83,7 @@ export default function CreateAccount() {
         <Input
           type="password"
           placeholder="Password"
+          autoComplete="current-password"
           {...register("password", { required: "Password is required..." })}
         />
         <Error>{errors.password?.message}</Error>
@@ -113,6 +92,11 @@ export default function CreateAccount() {
           value={isLoading ? "Loading..." : "Create Account"}
         />
       </Form>
+      <Error>{errorMsg ? errorMsg : ""}</Error>
+      <Switcher>
+        이미 계정이 있으신가요??
+        <Link to="/login">Login &rarr;</Link>
+      </Switcher>
     </Wrapper>
   );
 }
