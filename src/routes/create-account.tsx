@@ -49,7 +49,6 @@ export default function CreateAccount() {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<ICreateAccountForm>();
 
   const onValid = (validData: ICreateAccountForm) => {
@@ -84,7 +83,10 @@ export default function CreateAccount() {
           {...register("password", { required: "Password is required..." })}
         />
         <Error>{errors.password?.message}</Error>
-        <Input type="submit" />
+        <Input
+          type="submit"
+          value={isLoading ? "Loading..." : "Create Account"}
+        />
       </Form>
     </Wrapper>
   );
