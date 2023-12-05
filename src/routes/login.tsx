@@ -12,6 +12,8 @@ import {
   Wrapper,
 } from "../components/auth-components";
 import { FirebaseError } from "@firebase/app";
+import GithubAuthButton from "../components/github-auth-button";
+import GoogleAuthButton from "../components/google-auth-button";
 
 interface ILoginForm {
   email: string;
@@ -76,6 +78,8 @@ export default function Login() {
         계정이 없으신가요?
         <Link to="/create-account">Sign up &rarr;</Link>
       </Switcher>
+      <GoogleAuthButton />
+      <GithubAuthButton />
     </Wrapper>
   );
 }

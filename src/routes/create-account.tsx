@@ -12,6 +12,8 @@ import {
   Wrapper,
 } from "../components/auth-components";
 import { FirebaseError } from "@firebase/app";
+import GithubAuthButton from "../components/github-auth-button";
+import GoogleAuthButton from "../components/google-auth-button";
 
 interface ICreateAccountForm {
   name: string;
@@ -97,6 +99,8 @@ export default function CreateAccount() {
         이미 계정이 있으신가요??
         <Link to="/login">Login &rarr;</Link>
       </Switcher>
+      <GoogleAuthButton />
+      <GithubAuthButton />
     </Wrapper>
   );
 }

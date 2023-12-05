@@ -51,3 +51,24 @@ export const Switcher = styled.span`
     margin-left: 0.5rem;
   }
 `;
+
+export const Logo = styled.img`
+  height: 25px;
+`;
+
+export const Button = styled.button`
+  width: 100%;
+  margin-top: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  border: none;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  ${Logo} {
+    margin-right: 0.5rem;
+  }
+`;
