@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
+import { addDoc, collection } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 const Wrapper = styled.div`
   width: 360px;
@@ -61,8 +63,25 @@ export default function PostTweetForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, watch } = useForm<ITweetForm>();
 
-  const onValid = (validData: ITweetForm) => {
-    console.log(validData);
+  const onValid = async (validData: ITweetForm) => {
+    const { tweet, img } = validData;
+    const user = auth.currentUser;
+
+    if (!user || isLoading || tweet === "" || tweet.length > 200) return;
+
+    try {
+      setIsLoading(true);
+      await addDoc(collection(db, "tweets"), {
+        tweet,
+        createdAt: Date.now(),
+        username: user.displayName || "익명",
+        userId: user.uid,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -85,7 +104,7 @@ export default function PostTweetForm() {
         />
         <TweetInputWrapper>
           <ImgFileLabel htmlFor="tweet-img">
-            {watch("img") ? (
+            {watch("img")?.length === 1 ? (
               "Photo added ✅"
             ) : (
               <svg
