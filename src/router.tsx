@@ -23,6 +23,18 @@ export const router = createBrowserRouter([
         path: "/profile",
         element: <Profile />,
       },
+      {
+        path: "/explore",
+        element: <h1>Explore~~~</h1>,
+      },
+      {
+        path: "/bookmark",
+        element: <h1>Bookmark~~~</h1>,
+      },
+      {
+        path: "/profile",
+        element: <h1>Profile~~~</h1>,
+      },
     ],
   },
   {

@@ -9,5 +9,5 @@ export default function ProtectedRoute({
   const user = auth.currentUser;
   if (!user) return <Navigate to="/login" />;
 
-  return children;
+  return <>{children}</>;
 }
