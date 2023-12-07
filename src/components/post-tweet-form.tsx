@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
-import { addDoc, collection } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { auth, db, storage } from "../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const Wrapper = styled.div`
   width: 360px;
@@ -61,22 +62,37 @@ interface ITweetForm {
 
 export default function PostTweetForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, watch } = useForm<ITweetForm>();
+  const { register, handleSubmit, watch, reset } = useForm<ITweetForm>();
 
   const onValid = async (validData: ITweetForm) => {
     const { tweet, img } = validData;
     const user = auth.currentUser;
 
+    console.log("=== onValid ", img);
     if (!user || isLoading || tweet === "" || tweet.length > 200) return;
 
     try {
       setIsLoading(true);
-      await addDoc(collection(db, "tweets"), {
+      const doc = await addDoc(collection(db, "tweets"), {
         tweet,
         createdAt: Date.now(),
         username: user.displayName || "익명",
         userId: user.uid,
       });
+      if (img) {
+        const locationRef = ref(
+          storage,
+          `tweets/${user.uid}-${user.displayName}/${doc.id}`
+        );
+        const result = await uploadBytes(locationRef, img[0]);
+        const url = await getDownloadURL(result.ref);
+
+        await updateDoc(doc, {
+          photo: url,
+        });
+      }
+
+      reset();
     } catch (error) {
       console.log(error);
     } finally {
