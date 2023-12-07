@@ -41,7 +41,7 @@ const Svg = styled.svg`
   margin-right: 8px;
 `;
 
-const Btn = styled.button`
+const PostBtn = styled.button`
   cursor: pointer;
   width: 100%;
   border: none;
@@ -50,6 +50,9 @@ const Btn = styled.button`
   background-color: #000;
   color: #fff;
   font-weight: 600;
+  &:hover {
+    background-color: #222;
+  }
 `;
 
 const UserWrapper = styled.div`
@@ -194,7 +197,7 @@ export default function Layout() {
             </Link>
           </MenuItem>
         </Menu>
-        <Btn>POST</Btn>
+        <PostBtn>POST</PostBtn>
         <UserWrapper>
           <UserLeft>
             <UserProfile />
