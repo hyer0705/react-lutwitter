@@ -11,9 +11,15 @@ import {
 } from "./tweet-components";
 import { ITweetForm } from "./post-tweet-form";
 import { ITweet } from "./timeline";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { showEditFormState } from "../atom/tweetAtom";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 
 export default function EditTweetForm({
   tweet,
@@ -45,6 +51,23 @@ export default function EditTweetForm({
       await updateDoc(doc(db, "tweets", id), {
         tweet,
       });
+
+      if (img && img.length > 0) {
+        // remove
+        if (photo) {
+          const currentImgRef = ref(storage, `tweets/${user.uid}/${id}`);
+          await deleteObject(currentImgRef);
+        }
+        // add
+        const newImgRef = ref(storage, `tweets/${user.uid}/${id}`);
+        const result = await uploadBytes(newImgRef, img[0]);
+        const url = await getDownloadURL(result.ref);
+
+        await updateDoc(doc(db, "tweets", id), {
+          photo: url,
+        });
+      }
+
       setShowEditForm({ tweetId: "", showEdit: false });
     } catch (error) {
       console.log(error);
@@ -71,7 +94,7 @@ export default function EditTweetForm({
         })}
       />
       <TweetInputWrapper>
-        <ImgFileLabel htmlFor="tweet-img">
+        <ImgFileLabel htmlFor={`img-${id}`}>
           {watch("img")?.length === 1 ? (
             "Photo added ✅"
           ) : (
@@ -92,7 +115,7 @@ export default function EditTweetForm({
           )}
         </ImgFileLabel>
         <ImgFileInput
-          id="tweet-img"
+          id={`img-${id}`}
           type="file"
           accept="image/*"
           {...register("img", {
