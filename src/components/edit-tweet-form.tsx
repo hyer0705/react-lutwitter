@@ -53,14 +53,14 @@ export default function EditTweetForm({
       });
 
       if (img && img.length > 0) {
+        const imgRef = ref(storage, `tweets/${user.uid}/${id}`);
+
         // remove
         if (photo) {
-          const currentImgRef = ref(storage, `tweets/${user.uid}/${id}`);
-          await deleteObject(currentImgRef);
+          await deleteObject(imgRef);
         }
         // add
-        const newImgRef = ref(storage, `tweets/${user.uid}/${id}`);
-        const result = await uploadBytes(newImgRef, img[0]);
+        const result = await uploadBytes(imgRef, img[0]);
         const url = await getDownloadURL(result.ref);
 
         await updateDoc(doc(db, "tweets", id), {
