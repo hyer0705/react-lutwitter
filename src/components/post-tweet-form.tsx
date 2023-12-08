@@ -68,7 +68,6 @@ export default function PostTweetForm() {
     const { tweet, img } = validData;
     const user = auth.currentUser;
 
-    console.log("=== onValid ", img);
     if (!user || isLoading || tweet === "" || tweet.length > 200) return;
 
     try {
@@ -143,7 +142,18 @@ export default function PostTweetForm() {
             id="tweet-img"
             type="file"
             accept="image/*"
-            {...register("img")}
+            {...register("img", {
+              validate: {
+                maxFileSize: (v) => {
+                  if (v) {
+                    return (
+                      v[0].size < 1 * 1024 * 1024 ||
+                      "1MB 이하의 이미지 파일만 가능합니다."
+                    );
+                  }
+                },
+              },
+            })}
           />
           <TweetPostBtn
             type="submit"
