@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./router";
 import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
-import { useEffect, useState } from "react";
+import { router } from "./router";
 import LoadingScreen from "./components/loading-screen";
 import { auth } from "./firebase";
 
@@ -21,11 +21,11 @@ const GlobalStyle = createGlobalStyle`
 
 const Wrapper = styled.div`
   height: 100vh;
-  width: 560px;
+  width: 720px;
+  padding: 5rem 0;
   display: flex;
-  align-items: center;
   justify-content: center;
-  flex-direction: column;
+  align-items: center;
   margin: 0 auto;
 `;
 
