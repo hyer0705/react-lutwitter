@@ -78,7 +78,7 @@ export default function PostTweetForm() {
         username: user.displayName || "익명",
         userId: user.uid,
       });
-      if (img) {
+      if (img && img?.length > 0) {
         const locationRef = ref(
           storage,
           `tweets/${user.uid}-${user.displayName}/${doc.id}`
