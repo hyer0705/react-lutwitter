@@ -1,9 +1,6 @@
 import { useState } from "react";
-import styled from "styled-components";
 import { useForm } from "react-hook-form";
-import { addDoc, collection, updateDoc } from "firebase/firestore";
-import { auth, db, storage } from "../firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import styled from "styled-components";
 import {
   Form,
   ImgFileInput,
@@ -12,54 +9,85 @@ import {
   TweetPostBtn,
   TweetTextArea,
 } from "./tweet-components";
+import { ITweetForm } from "./post-tweet-form";
+import { ITweet } from "./timeline";
+import { auth, db } from "../firebase";
+import { collection, doc, updateDoc } from "firebase/firestore";
 
 const Wrapper = styled.div`
+  background-color: #44c662;
+  border-radius: 0.5rem;
   width: 360px;
 `;
 
-export interface ITweetForm {
-  tweet: string;
-  img?: FileList;
-}
+const CloseBtnWrapper = styled.div`
+  padding: 0.5rem 1rem;
+  border-top-left-radius: 0.5rem;
+  background-color: #000;
+  border-top-right-radius: 0.5rem;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+`;
+const CloseBtn = styled.svg`
+  height: 20px;
+  cursor: pointer;
+`;
 
-export default function PostTweetForm() {
+export default function EditTweetForm({
+  tweet,
+  userId,
+  id,
+}: {
+  tweet: ITweet["tweet"];
+  userId: ITweet["userId"];
+  id: ITweet["id"];
+}) {
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, watch, reset } = useForm<ITweetForm>();
+  const { register, handleSubmit, watch } = useForm<ITweetForm>({
+    defaultValues: {
+      tweet,
+    },
+  });
 
   const onValid = async (validData: ITweetForm) => {
     const { tweet, img } = validData;
     const user = auth.currentUser;
 
-    if (!user || isLoading || tweet === "" || tweet.length > 200) return;
+    if (user?.uid !== userId) return;
 
     try {
       setIsLoading(true);
-      const doc = await addDoc(collection(db, "tweets"), {
+      await updateDoc(doc(db, "tweets", id), {
         tweet,
-        createdAt: Date.now(),
-        username: user.displayName || "익명",
-        userId: user.uid,
       });
-      if (img && img?.length > 0) {
-        const locationRef = ref(storage, `tweets/${user.uid}/${doc.id}`);
-        const result = await uploadBytes(locationRef, img[0]);
-        const url = await getDownloadURL(result.ref);
-
-        await updateDoc(doc, {
-          photo: url,
-        });
-      }
-
-      reset();
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
+
+    console.log(tweet);
   };
 
   return (
     <Wrapper>
+      <CloseBtnWrapper>
+        <CloseBtn
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </CloseBtn>
+      </CloseBtnWrapper>
       <Form onSubmit={handleSubmit(onValid)}>
         <TweetTextArea
           rows={5}
