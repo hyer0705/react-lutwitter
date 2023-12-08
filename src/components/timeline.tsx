@@ -42,19 +42,6 @@ export default function Timeline() {
         limit(25)
       );
 
-      /* const snapshot = await getDocs(tweetsQuery);
-        const tweets = snapshot.docs.map((doc) => {
-          const { tweet, userId, username, photo, createdAt } = doc.data();
-          return {
-            tweet,
-            userId,
-            username,
-            photo,
-            createdAt,
-            id: doc.id,
-          };
-        }); */
-
       unsubscribe = await onSnapshot(tweetsQuery, (snapshot) => {
         const tweets = snapshot.docs.map((doc) => {
           const { tweet, userId, username, photo, createdAt } = doc.data();

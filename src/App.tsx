@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./router";
 import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
-import { useEffect, useState } from "react";
+import { router } from "./router";
 import LoadingScreen from "./components/loading-screen";
 import { auth } from "./firebase";
 
