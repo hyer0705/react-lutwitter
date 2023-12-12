@@ -80,10 +80,14 @@ const UserProfile = styled.div`
   background-color: #eee2de;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const UserProfileImg = styled.img`
   width: 95%;
   height: 95%;
+  border-radius: 50%;
 `;
 
 const UserInfo = styled.div`
@@ -114,6 +118,7 @@ const Logout = styled.div`
 
 export default function Layout() {
   const user = auth.currentUser;
+
   const navigate = useNavigate();
   const onLogout = async () => {
     try {

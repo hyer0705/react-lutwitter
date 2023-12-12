@@ -5,6 +5,7 @@ import { auth } from "../firebase";
 
 export default function GoogleAuthButton() {
   const navigate = useNavigate();
+
   const onGoogleClick = async () => {
     try {
       const googleProvider = new GoogleAuthProvider();

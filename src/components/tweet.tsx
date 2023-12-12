@@ -34,6 +34,9 @@ const ProfilePic = styled.div`
   height: 28px;
   background-color: #eee2de;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const UserName = styled.span`
   font-size: 14px;
@@ -95,6 +98,8 @@ const CloseBtn = styled.svg`
 const ProfileImg = styled.img`
   width: 95%;
   height: 95%;
+  border-radius: 50%;
+  overflow: hidden;
 `;
 
 export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {

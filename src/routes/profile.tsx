@@ -8,14 +8,12 @@ import { updateProfile } from "firebase/auth";
 import { ITweet } from "../components/timeline";
 import {
   collection,
-  doc,
   getDocs,
   limit,
   orderBy,
   query,
   updateDoc,
   where,
-  writeBatch,
 } from "firebase/firestore";
 import Tweet from "../components/tweet";
 
@@ -143,6 +141,7 @@ interface IEditProfileForm {
 
 export default function Profile() {
   const user = auth.currentUser;
+
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [isEditProfile, setIsEditProfile] = useState(false);
   const [tweets, setTweets] = useState<ITweet[]>([]);
@@ -200,13 +199,12 @@ export default function Profile() {
       }
 
       if (displayName !== user?.displayName) {
-        console.log("what?");
+        await updateProfile(user, {
+          displayName,
+        });
+
         await updateInTweets(displayName);
       }
-
-      await updateProfile(user, {
-        displayName,
-      });
     } catch (error) {
       console.log(error);
     } finally {
