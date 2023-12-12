@@ -105,6 +105,7 @@ const Logout = styled.div`
 `;
 
 export default function Layout() {
+  const user = auth.currentUser;
   const navigate = useNavigate();
   const onLogout = async () => {
     try {
@@ -203,8 +204,13 @@ export default function Layout() {
             <UserProfile />
             <UserInfo>
               {/** 강의 들어보고 어떻게 할지 아이디어 얻기 */}
-              <span>Username</span>
-              {/* <span>@userid</span> */}
+              <span>{user?.displayName}</span>
+              <span>
+                @
+                {user && user?.uid.length > 10
+                  ? user?.uid.slice(0, 10)
+                  : user?.uid}
+              </span>
             </UserInfo>
           </UserLeft>
           <Logout>
