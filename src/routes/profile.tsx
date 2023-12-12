@@ -1,6 +1,10 @@
+import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import { auth } from "../firebase";
+import { auth, storage } from "../firebase";
 import { useState } from "react";
+import { maxFileSize } from "../libs/form-validate";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { updateProfile } from "firebase/auth";
 
 const Wrapper = styled.div`
   width: 360px;
@@ -40,7 +44,13 @@ const ProfileAvatar = styled.div`
   align-items: center;
   justify-content: center;
 `;
-const ProfileAvatarImg = styled.img``;
+const ProfileAvatarImg = styled.img`
+  width: 90%;
+  height: 90%;
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: 50%;
+`;
 const ProfileAvatarSvg = styled.svg`
   width: 75%;
   height: 75%;
@@ -85,29 +95,86 @@ const ProfileAvatarLabel = styled.label`
 const ProfileAvatarInput = styled.input`
   display: none;
 `;
+
+const ProfileLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
 const ProfileUserInfoInput = styled.input`
   border-radius: 1rem;
   border: none;
   padding: 0.3rem 0.8rem;
 `;
 
+const EditErrMsg = styled.span`
+  padding: 0.5rem 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c9182b;
+`;
+
+interface IEditProfileForm {
+  avatar?: FileList;
+  displayName: string;
+}
+
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [isEditProfile, setIsEditProfile] = useState(false);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IEditProfileForm>({
+    defaultValues: { displayName: user?.displayName || "익명" },
+  });
+
   const onEditProfileClick = () => setIsEditProfile(true);
+
+  const onAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { files },
+    } = e;
+    if (files && files?.length > 0) {
+      const avatarImg = files[0];
+      const avatarImgUrl = URL.createObjectURL(avatarImg);
+
+      setAvatar(avatarImgUrl);
+    }
+  };
+  const onValid = async (validData: IEditProfileForm) => {
+    const { displayName, avatar } = validData;
+    if (!user) return;
+    if (avatar && avatar.length > 0) {
+      const file = avatar[0];
+      const locationRef = ref(storage, `avatars/${user.uid}`);
+      const result = await uploadBytes(locationRef, file);
+      const avatarUrl = await getDownloadURL(result.ref);
+
+      setAvatar(avatarUrl);
+      setIsEditProfile(false);
+      await updateProfile(user, {
+        photoURL: avatarUrl,
+        displayName,
+      });
+    }
+  };
 
   return (
     <Wrapper>
       <ProfileBackground></ProfileBackground>
       <ProfileMain>
         {isEditProfile ? (
-          <ProfileEditForm>
+          <ProfileEditForm
+            onSubmit={handleSubmit(onValid, (e) => console.log(e))}
+          >
             <ProfileAvatarWrapper>
               <ProfileAvatar>
                 {avatar ? (
-                  <ProfileAvatarImg src="" alt="avatar image" />
+                  <ProfileAvatarImg src={avatar} alt="avatar image" />
                 ) : (
                   <ProfileAvatarSvg
                     fill="none"
@@ -146,9 +213,36 @@ export default function Profile() {
                   />
                 </svg>
               </ProfileAvatarLabel>
-              <ProfileAvatarInput type="file" id="avatar" />
-              <ProfileUserInfoInput value={user?.displayName || "익명"} />
-              <ProfileUserInfo>{`@${user?.uid.slice(0, 10)}`}</ProfileUserInfo>
+              <ProfileAvatarInput
+                type="file"
+                id="avatar"
+                accept="image/*"
+                {...register("avatar", {
+                  onChange: onAvatarChange,
+                  validate: {
+                    maxFileSize,
+                  },
+                })}
+              />
+              {errors.avatar?.message ? (
+                <EditErrMsg>{errors.avatar.message}</EditErrMsg>
+              ) : null}
+              <ProfileLabel>
+                Display Name:
+                <ProfileUserInfoInput
+                  type="text"
+                  placeholder="Ex) Lucy"
+                  {...register("displayName", {
+                    required: {
+                      value: true,
+                      message: "사용자의 display 이름을 입력해주세요",
+                    },
+                  })}
+                />
+              </ProfileLabel>
+              {errors.displayName?.message ? (
+                <EditErrMsg>{errors.displayName.message}</EditErrMsg>
+              ) : null}
             </ProfileAvatarWrapper>
             <ProfileEditBtn>완료</ProfileEditBtn>
           </ProfileEditForm>
@@ -157,7 +251,7 @@ export default function Profile() {
             <ProfileAvatarWrapper>
               <ProfileAvatar>
                 {avatar ? (
-                  <ProfileAvatarImg src="" alt="avatar image" />
+                  <ProfileAvatarImg src={avatar} alt="avatar image" />
                 ) : (
                   <ProfileAvatarSvg
                     fill="none"
