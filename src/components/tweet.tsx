@@ -92,6 +92,11 @@ const CloseBtn = styled.svg`
   cursor: pointer;
 `;
 
+const ProfileImg = styled.img`
+  width: 95%;
+  height: 95%;
+`;
+
 export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
   const [showEditForm, setShowEditForm] = useRecoilState(showEditFormState);
   const user = auth.currentUser;
@@ -150,7 +155,14 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
         <Wrapper>
           <Row>
             <Col>
-              <ProfilePic />
+              <ProfilePic>
+                {user?.photoURL ? (
+                  <ProfileImg
+                    alt={`${user?.displayName}의 profile image`}
+                    src={user?.photoURL || ""}
+                  />
+                ) : null}
+              </ProfilePic>
             </Col>
             <Col>
               <UserName>{username}</UserName>

@@ -81,6 +81,10 @@ const UserProfile = styled.div`
   border-radius: 50%;
   cursor: pointer;
 `;
+const UserProfileImg = styled.img`
+  width: 95%;
+  height: 95%;
+`;
 
 const UserInfo = styled.div`
   display: flex;
@@ -206,7 +210,14 @@ export default function Layout() {
         <UserWrapper>
           <UserLeft>
             <Link to="/profile">
-              <UserProfile />
+              <UserProfile>
+                {user?.photoURL ? (
+                  <UserProfileImg
+                    alt={`${user.displayName} 의 profile image`}
+                    src={user?.photoURL || ""}
+                  />
+                ) : null}
+              </UserProfile>
               <UserInfo>
                 <span>{user?.displayName}</span>
                 <span>{`@${user?.uid.slice(0, 10)}`}</span>
