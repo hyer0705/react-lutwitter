@@ -150,7 +150,7 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
             </Col>
             <Col>
               <UserName>{username}</UserName>
-              <UserId>{`@${userId}`}</UserId>
+              <UserId>{`@${userId.slice(0, 10)}`}</UserId>
             </Col>
             <Col>
               {user?.uid === userId ? (
