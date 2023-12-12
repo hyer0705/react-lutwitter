@@ -8,11 +8,14 @@ import { updateProfile } from "firebase/auth";
 import { ITweet } from "../components/timeline";
 import {
   collection,
+  doc,
   getDocs,
   limit,
   orderBy,
   query,
+  updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import Tweet from "../components/tweet";
 
@@ -165,21 +168,50 @@ export default function Profile() {
       setAvatar(avatarImgUrl);
     }
   };
+
+  const updateInTweets = async (displayName: string) => {
+    const tweetsQuery = query(
+      collection(db, "tweets"),
+      where("userId", "==", user?.uid)
+    );
+    const querySnapshot = await getDocs(tweetsQuery);
+
+    // 한 번에 update 하는 방법은? forEach를 사용하지 않는 방법은?
+    querySnapshot.forEach(async (doc) => {
+      await updateDoc(doc.ref, {
+        username: displayName,
+      });
+    });
+  };
   const onValid = async (validData: IEditProfileForm) => {
     const { displayName, avatar } = validData;
-    if (!user) return;
-    if (avatar && avatar.length > 0) {
-      const file = avatar[0];
-      const locationRef = ref(storage, `avatars/${user.uid}`);
-      const result = await uploadBytes(locationRef, file);
-      const avatarUrl = await getDownloadURL(result.ref);
+    try {
+      if (!user) return;
+      if (avatar && avatar.length > 0) {
+        const file = avatar[0];
+        const locationRef = ref(storage, `avatars/${user.uid}`);
+        const result = await uploadBytes(locationRef, file);
+        const avatarUrl = await getDownloadURL(result.ref);
 
-      setAvatar(avatarUrl);
-      setIsEditProfile(false);
+        setAvatar(avatarUrl);
+        await updateProfile(user, {
+          photoURL: avatarUrl,
+        });
+      }
+
+      if (displayName !== user?.displayName) {
+        console.log("what?");
+        await updateInTweets(displayName);
+      }
+
       await updateProfile(user, {
-        photoURL: avatarUrl,
         displayName,
       });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsEditProfile(false);
+      fetchTweets();
     }
   };
 
