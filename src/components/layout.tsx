@@ -65,8 +65,12 @@ const UserWrapper = styled.div`
 `;
 
 const UserLeft = styled.div`
-  display: flex;
-  align-items: center;
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
 const UserProfile = styled.div`
@@ -201,17 +205,19 @@ export default function Layout() {
         <PostBtn>POST</PostBtn>
         <UserWrapper>
           <UserLeft>
-            <UserProfile />
-            <UserInfo>
-              {/** 강의 들어보고 어떻게 할지 아이디어 얻기 */}
-              <span>{user?.displayName}</span>
-              <span>
-                @
-                {user && user?.uid.length > 10
-                  ? user?.uid.slice(0, 10)
-                  : user?.uid}
-              </span>
-            </UserInfo>
+            <Link to="/profile">
+              <UserProfile />
+              <UserInfo>
+                {/** 강의 들어보고 어떻게 할지 아이디어 얻기 */}
+                <span>{user?.displayName}</span>
+                <span>
+                  @
+                  {user && user?.uid.length > 10
+                    ? user?.uid.slice(0, 10)
+                    : user?.uid}
+                </span>
+              </UserInfo>
+            </Link>
           </UserLeft>
           <Logout>
             <span onClick={onLogout}>logout</span>
