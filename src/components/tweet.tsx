@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { ITweet } from "./timeline";
@@ -34,6 +34,9 @@ const ProfilePic = styled.div`
   height: 28px;
   background-color: #eee2de;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const UserName = styled.span`
   font-size: 14px;
@@ -92,6 +95,13 @@ const CloseBtn = styled.svg`
   cursor: pointer;
 `;
 
+const ProfileImg = styled.img`
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
+  overflow: hidden;
+`;
+
 export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
   const [showEditForm, setShowEditForm] = useRecoilState(showEditFormState);
   const user = auth.currentUser;
@@ -118,6 +128,10 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
 
   const onCloseBtnClick = () =>
     setShowEditForm({ tweetId: "", showEdit: false });
+
+  useEffect(() => {
+    return () => setShowEditForm({ tweetId: "", showEdit: false });
+  }, []);
 
   return (
     <>
@@ -146,11 +160,18 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
         <Wrapper>
           <Row>
             <Col>
-              <ProfilePic />
+              <ProfilePic>
+                {user?.photoURL ? (
+                  <ProfileImg
+                    alt={`${user?.displayName}의 profile image`}
+                    src={user?.photoURL || ""}
+                  />
+                ) : null}
+              </ProfilePic>
             </Col>
             <Col>
               <UserName>{username}</UserName>
-              <UserId>{`@${userId}`}</UserId>
+              <UserId>{`@${userId.slice(0, 10)}`}</UserId>
             </Col>
             <Col>
               {user?.uid === userId ? (

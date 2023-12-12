@@ -65,8 +65,12 @@ const UserWrapper = styled.div`
 `;
 
 const UserLeft = styled.div`
-  display: flex;
-  align-items: center;
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
 const UserProfile = styled.div`
@@ -76,6 +80,14 @@ const UserProfile = styled.div`
   background-color: #eee2de;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const UserProfileImg = styled.img`
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
 `;
 
 const UserInfo = styled.div`
@@ -105,6 +117,8 @@ const Logout = styled.div`
 `;
 
 export default function Layout() {
+  const user = auth.currentUser;
+
   const navigate = useNavigate();
   const onLogout = async () => {
     try {
@@ -200,12 +214,20 @@ export default function Layout() {
         <PostBtn>POST</PostBtn>
         <UserWrapper>
           <UserLeft>
-            <UserProfile />
-            <UserInfo>
-              {/** 강의 들어보고 어떻게 할지 아이디어 얻기 */}
-              <span>Username</span>
-              {/* <span>@userid</span> */}
-            </UserInfo>
+            <Link to="/profile">
+              <UserProfile>
+                {user?.photoURL ? (
+                  <UserProfileImg
+                    alt={`${user.displayName} 의 profile image`}
+                    src={user?.photoURL || ""}
+                  />
+                ) : null}
+              </UserProfile>
+              <UserInfo>
+                <span>{user?.displayName}</span>
+                <span>{`@${user?.uid.slice(0, 10)}`}</span>
+              </UserInfo>
+            </Link>
           </UserLeft>
           <Logout>
             <span onClick={onLogout}>logout</span>

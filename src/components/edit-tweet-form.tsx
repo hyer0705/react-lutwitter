@@ -20,6 +20,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { maxFileSize } from "../libs/form-validate";
 
 export default function EditTweetForm({
   tweet,
@@ -120,14 +121,7 @@ export default function EditTweetForm({
           accept="image/*"
           {...register("img", {
             validate: {
-              maxFileSize: (v) => {
-                if (v && v.length > 0) {
-                  return (
-                    v[0].size < 1 * 1024 * 1024 ||
-                    "1MB 이하의 이미지 파일만 가능합니다."
-                  );
-                }
-              },
+              maxFileSize,
             },
           })}
         />

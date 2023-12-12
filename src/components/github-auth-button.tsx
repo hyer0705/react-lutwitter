@@ -5,6 +5,7 @@ import { Button, Logo } from "./auth-components";
 
 export default function GithubAuthButton() {
   const navigate = useNavigate();
+
   const onGithubClick = async () => {
     try {
       const provider = new GithubAuthProvider();
