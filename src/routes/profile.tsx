@@ -1,13 +1,22 @@
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import { auth, storage } from "../firebase";
-import { useState } from "react";
+import { auth, db, storage } from "../firebase";
 import { maxFileSize } from "../libs/form-validate";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
+import { ITweet } from "../components/timeline";
+import {
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import Tweet from "../components/tweet";
 
 const Wrapper = styled.div`
-  width: 360px;
   height: 100%;
 `;
 
@@ -114,6 +123,16 @@ const EditErrMsg = styled.span`
   color: #c9182b;
 `;
 
+const Tweets = styled.div`
+  margin-top: 1rem;
+  padding-right: 1rem;
+  height: 74%;
+  display: grid;
+  gap: 1rem;
+  overflow-y: scroll;
+  grid-template-rows: 1fr 5fr;
+`;
+
 interface IEditProfileForm {
   avatar?: FileList;
   displayName: string;
@@ -123,6 +142,7 @@ export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [isEditProfile, setIsEditProfile] = useState(false);
+  const [tweets, setTweets] = useState<ITweet[]>([]);
 
   const {
     register,
@@ -162,6 +182,35 @@ export default function Profile() {
       });
     }
   };
+
+  const fetchTweets = async () => {
+    const tweetQuery = query(
+      collection(db, "tweets"),
+      where("userId", "==", user?.uid),
+      orderBy("createdAt", "desc"),
+      limit(25)
+    );
+
+    const snapshot = await getDocs(tweetQuery);
+    const tweets = snapshot.docs.map((doc) => {
+      const { tweet, createdAt, userId, username, photo } = doc.data();
+
+      return {
+        tweet,
+        createdAt,
+        userId,
+        username,
+        photo,
+        id: doc.id,
+      };
+    });
+
+    setTweets(tweets);
+  };
+
+  useEffect(() => {
+    fetchTweets();
+  }, []);
 
   return (
     <Wrapper>
@@ -278,6 +327,11 @@ export default function Profile() {
           </>
         )}
       </ProfileMain>
+      <Tweets>
+        {tweets.map((tweet) => (
+          <Tweet key={tweet.id} {...tweet} />
+        ))}
+      </Tweets>
     </Wrapper>
   );
 }

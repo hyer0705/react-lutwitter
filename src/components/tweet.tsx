@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { ITweet } from "./timeline";
@@ -117,6 +118,10 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
 
   const onCloseBtnClick = () =>
     setShowEditForm({ tweetId: "", showEdit: false });
+
+  useEffect(() => {
+    return () => setShowEditForm({ tweetId: "", showEdit: false });
+  }, []);
 
   return (
     <>
