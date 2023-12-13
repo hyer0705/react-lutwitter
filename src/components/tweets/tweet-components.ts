@@ -60,3 +60,9 @@ export const CloseBtn = styled.svg`
   height: 20px;
   cursor: pointer;
 `;
+
+export const TweetControlBtn = styled.svg`
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+`;
