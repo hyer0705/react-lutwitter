@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
-import { auth, db, storage } from "../firebase";
+import { auth, db, storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import {
   Form,
@@ -12,7 +12,7 @@ import {
   TweetPostBtn,
   TweetTextArea,
 } from "./tweet-components";
-import { maxFileSize } from "../libs/form-validate";
+import { maxFileSize } from "../../libs/form-validate";
 
 const Wrapper = styled.div`
   width: 360px;

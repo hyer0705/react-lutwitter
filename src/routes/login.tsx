@@ -1,6 +1,7 @@
+import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { useNavigate, Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { auth } from "../firebase";
 import {
@@ -10,10 +11,11 @@ import {
   Switcher,
   Title,
   Wrapper,
-} from "../components/auth-components";
+} from "../components/auth/auth-components";
 import { FirebaseError } from "@firebase/app";
-import GithubAuthButton from "../components/github-auth-button";
-import GoogleAuthButton from "../components/google-auth-button";
+import GithubAuthButton from "../components/auth/github-auth-button";
+import GoogleAuthButton from "../components/auth/google-auth-button";
+import { isAuthEditState } from "../atom/authAtom";
 
 interface ILoginForm {
   email: string;
@@ -26,6 +28,8 @@ export default function Login() {
 
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const setIsAuthEdit = useSetRecoilState(isAuthEditState);
+
   const {
     register,
     handleSubmit,
@@ -38,6 +42,7 @@ export default function Login() {
 
     try {
       setIsLoading(true);
+      setIsAuthEdit(true);
       await signInWithEmailAndPassword(auth, email, password);
 
       navigate("/");
@@ -52,6 +57,7 @@ export default function Login() {
       }
     } finally {
       setIsLoading(false);
+      setIsAuthEdit(false);
     }
   };
 

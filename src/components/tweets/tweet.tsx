@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { ITweet } from "./timeline";
-import { auth, db, storage } from "../firebase";
+import { auth, db, storage } from "../../firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import EditTweetForm from "./edit-tweet-form";
-import { showEditFormState } from "../atom/tweetAtom";
+import { showEditFormState } from "../../atom/tweetAtom";
 
 const Wrapper = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.5);
