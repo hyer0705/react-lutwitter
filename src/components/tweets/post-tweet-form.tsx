@@ -56,11 +56,11 @@ export default function PostTweetForm({ labelId }: { labelId: string }) {
       }
 
       reset();
+      setIsOpenDialog(false);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
-      setIsOpenDialog(false);
     }
   };
 
