@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { ITweet } from "./timeline";
-import { auth, db, storage } from "../../firebase";
-import { deleteDoc, doc } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
+import { auth } from "../../firebase";
+
 import EditTweetForm from "./edit-tweet-form";
 import { showEditFormState } from "../../atom/tweetAtom";
 import { CloseBtn, CloseBtnWrapper, TweetControlBtn } from "./tweet-components";
@@ -86,20 +85,6 @@ const ProfileImg = styled.img`
 export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
   const [showEditForm, setShowEditForm] = useRecoilState(showEditFormState);
   const user = auth.currentUser;
-  const onDelete = async () => {
-    const confirmDelete = confirm("정말 이 트윗을 지우시겠습니까?");
-
-    if (!confirmDelete || user?.uid !== userId) return;
-    try {
-      await deleteDoc(doc(db, "tweets", id));
-      if (photo) {
-        const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
-        await deleteObject(photoRef);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const onEdit = () => {
     if (user?.uid !== userId) return;
@@ -157,7 +142,7 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
             <Col>
               {user?.uid === userId ? (
                 <>
-                  <DeleteTweetAlert />
+                  <DeleteTweetAlert id={id} photo={photo} />
                   <TweetControlBtn
                     onClick={onEdit}
                     fill="none"

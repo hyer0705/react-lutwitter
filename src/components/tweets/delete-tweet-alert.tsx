@@ -1,6 +1,9 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import styled from "styled-components";
+import { deleteDoc, doc } from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 import { TweetControlBtn } from "./tweet-components";
+import { auth, db, storage } from "../../firebase";
 
 const AlertDialogOverlay = styled(AlertDialog.Overlay)`
   background-color: rgba(214, 228, 229, 0.75);
@@ -54,7 +57,31 @@ const AlertDialogBtn = styled.button`
   }
 `;
 
-export default function DeleteTweetAlert() {
+/**
+ * To Do...
+ * Timeline > Tweet > DeleteTweetAlert props 로 데이터를 주고 있는데 과연 이렇게 관리를 하는 것이 맞는 것인지?
+ * 상태 관리 라이브러리를 사용해서 관리할 것인지?
+ */
+export default function DeleteTweetAlert({
+  photo,
+  id,
+}: {
+  photo?: string;
+  id: string;
+}) {
+  const user = auth.currentUser;
+  const onDelete = async () => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, "tweets", id));
+      if (photo) {
+        const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
+        await deleteObject(photoRef);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
@@ -80,7 +107,7 @@ export default function DeleteTweetAlert() {
           <AlertDialogDesc>이 작업은 취소할 수 없습니다.</AlertDialogDesc>
           <AlertDialogBtnWrapper>
             <AlertDialog.Action asChild>
-              <AlertDialogBtn>삭제</AlertDialogBtn>
+              <AlertDialogBtn onClick={onDelete}>삭제</AlertDialogBtn>
             </AlertDialog.Action>
             <AlertDialog.Cancel asChild>
               <AlertDialogBtn>취소</AlertDialogBtn>
