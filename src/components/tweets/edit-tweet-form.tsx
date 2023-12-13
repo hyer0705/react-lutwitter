@@ -11,16 +11,16 @@ import {
 } from "./tweet-components";
 import { ITweetForm } from "./post-tweet-form";
 import { ITweet } from "./timeline";
-import { auth, db, storage } from "../firebase";
+import { auth, db, storage } from "../../firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { showEditFormState } from "../atom/tweetAtom";
+import { showEditFormState } from "../../atom/tweetAtom";
 import {
   deleteObject,
   getDownloadURL,
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { maxFileSize } from "../libs/form-validate";
+import { maxFileSize } from "../../libs/form-validate";
 
 export default function EditTweetForm({
   tweet,

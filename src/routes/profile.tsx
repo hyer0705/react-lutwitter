@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { auth, db, storage } from "../firebase";
 import { maxFileSize } from "../libs/form-validate";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
-import { ITweet } from "../components/timeline";
+import { ITweet } from "../components/tweets/timeline";
 import {
   collection,
   getDocs,
@@ -15,7 +16,8 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import Tweet from "../components/tweet";
+import Tweet from "../components/tweets/tweet";
+import { isAuthEditState } from "../atom/authAtom";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -142,6 +144,7 @@ interface IEditProfileForm {
 export default function Profile() {
   const user = auth.currentUser;
 
+  const setIsAuthEdit = useSetRecoilState(isAuthEditState);
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [isEditProfile, setIsEditProfile] = useState(false);
   const [tweets, setTweets] = useState<ITweet[]>([]);
@@ -199,6 +202,7 @@ export default function Profile() {
       }
 
       if (displayName !== user?.displayName) {
+        setIsAuthEdit(true);
         await updateProfile(user, {
           displayName,
         });
@@ -210,6 +214,7 @@ export default function Profile() {
     } finally {
       setIsEditProfile(false);
       fetchTweets();
+      setIsAuthEdit(false);
     }
   };
 

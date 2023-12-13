@@ -1,6 +1,9 @@
+import { useEffect } from "react";
+import { useRecoilValue } from "recoil";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import { auth } from "../firebase";
+import { isAuthEditState } from "../atom/authAtom";
 
 const Wrapper = styled.div`
   padding-right: 1rem;
@@ -118,8 +121,10 @@ const Logout = styled.div`
 
 export default function Layout() {
   const user = auth.currentUser;
-
   const navigate = useNavigate();
+
+  const isAuthEdit = useRecoilValue(isAuthEditState);
+
   const onLogout = async () => {
     try {
       await auth.signOut();
@@ -129,6 +134,11 @@ export default function Layout() {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (isAuthEdit) user?.reload();
+  }, [user, isAuthEdit]);
+
   return (
     <>
       <Wrapper>

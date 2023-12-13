@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import PostTweetForm from "../components/post-tweet-form";
-import Timeline from "../components/timeline";
+import PostTweetForm from "../components/tweets/post-tweet-form";
+import Timeline from "../components/tweets/timeline";
 
 const Wrapper = styled.div`
   height: 100%;
