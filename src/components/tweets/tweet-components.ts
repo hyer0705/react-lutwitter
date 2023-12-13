@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export const Form = styled.form`
   padding: 2rem 1rem;
@@ -46,16 +47,6 @@ export const TweetPostBtn = styled.input`
   }
 `;
 
-export const CloseBtnWrapper = styled.div`
-  padding: 0.5rem 1rem;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  background-color: #000;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-`;
-
 export const CloseBtn = styled.svg`
   height: 20px;
   cursor: pointer;
@@ -64,5 +55,31 @@ export const CloseBtn = styled.svg`
 export const TweetControlBtn = styled.svg`
   width: 20px;
   height: 20px;
+  cursor: pointer;
+`;
+
+export const DialogOverloay = styled(Dialog.Overlay)`
+  background-color: rgba(227, 243, 172, 0.9);
+  position: fixed;
+  inset: 0;
+`;
+
+export const DialogContent = styled(Dialog.Content)`
+  background-color: #44c662;
+  border-radius: 0.5rem;
+  position: fixed;
+  top: 35%;
+  left: 40%;
+  width: 90vw;
+  max-width: 360px;
+  max-height: 85vh;
+`;
+
+export const DialogCloseBtn = styled.svg`
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 7px;
+  right: 7px;
   cursor: pointer;
 `;

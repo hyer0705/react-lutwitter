@@ -47,6 +47,7 @@ const AlertDialogBtn = styled.button`
   padding: 0.5rem 1rem;
   font-weight: 600;
   color: #fff;
+  cursor: pointer;
 
   &:first-child {
     background-color: #c9182b;

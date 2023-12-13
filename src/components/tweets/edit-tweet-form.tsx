@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useState, useEffect } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -10,10 +10,8 @@ import {
   TweetTextArea,
 } from "./tweet-components";
 import { ITweetForm } from "./post-tweet-form";
-import { ITweet } from "./timeline";
 import { auth, db, storage } from "../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
-import { showEditFormState } from "../../atom/tweetAtom";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -21,61 +19,76 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { maxFileSize } from "../../libs/form-validate";
+import {
+  isOepnEditTweetDialog,
+  selectedTweetIdState,
+} from "../../atom/tweetAtom";
 
-export default function EditTweetForm({
-  tweet,
-  userId,
-  id,
-  photo,
-}: {
-  tweet: ITweet["tweet"];
-  userId: ITweet["userId"];
-  id: ITweet["id"];
-  photo?: ITweet["photo"];
-}) {
-  const setShowEditForm = useSetRecoilState(showEditFormState);
+export default function EditTweetForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, watch } = useForm<ITweetForm>({
-    defaultValues: {
-      tweet,
-    },
+  const [selectedTweet, setSelectedTweet] = useState({
+    photo: "",
+    tweet: "",
   });
+
+  const selectedTweetId = useRecoilValue(selectedTweetIdState);
+  const setIsOpenDialog = useSetRecoilState(isOepnEditTweetDialog);
+
+  const { register, handleSubmit, watch, setValue } = useForm<ITweetForm>();
 
   const onValid = async (validData: ITweetForm) => {
     const { tweet, img } = validData;
     const user = auth.currentUser;
 
-    if (user?.uid !== userId) return;
+    if (!user) return;
 
     try {
       setIsLoading(true);
-      await updateDoc(doc(db, "tweets", id), {
+      await updateDoc(doc(db, "tweets", selectedTweetId), {
         tweet,
       });
 
       if (img && img.length > 0) {
-        const imgRef = ref(storage, `tweets/${user.uid}/${id}`);
+        const imgRef = ref(storage, `tweets/${user.uid}/${selectedTweetId}`);
 
         // remove
-        if (photo) {
+        if (selectedTweet.photo) {
           await deleteObject(imgRef);
         }
         // add
         const result = await uploadBytes(imgRef, img[0]);
         const url = await getDownloadURL(result.ref);
 
-        await updateDoc(doc(db, "tweets", id), {
+        await updateDoc(doc(db, "tweets", selectedTweetId), {
           photo: url,
         });
       }
-
-      setShowEditForm({ tweetId: "", showEdit: false });
+      setIsOpenDialog({ tweetId: "", isOpen: false });
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const getSelectedTweet = async () => {
+    const docRef = doc(db, "tweets", selectedTweetId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const { tweet, photo } = docSnap.data();
+
+      setSelectedTweet({
+        tweet,
+        photo,
+      });
+      setValue("tweet", tweet);
+    }
+  };
+
+  useEffect(() => {
+    getSelectedTweet();
+  }, []);
 
   return (
     <Form onSubmit={handleSubmit(onValid)}>
@@ -95,7 +108,7 @@ export default function EditTweetForm({
         })}
       />
       <TweetInputWrapper>
-        <ImgFileLabel htmlFor={`img-${id}`}>
+        <ImgFileLabel htmlFor={`img-${selectedTweetId}`}>
           {watch("img")?.length === 1 ? (
             "Photo added ✅"
           ) : (
@@ -116,7 +129,7 @@ export default function EditTweetForm({
           )}
         </ImgFileLabel>
         <ImgFileInput
-          id={`img-${id}`}
+          id={`img-${selectedTweetId}`}
           type="file"
           accept="image/*"
           {...register("img", {

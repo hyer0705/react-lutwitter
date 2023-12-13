@@ -5,12 +5,17 @@ export interface IShowEditForm {
   showEdit: boolean;
 }
 
-export const showEditFormState = atom<IShowEditForm>({
-  key: "showEditFormState",
-  default: { tweetId: "", showEdit: false },
-});
-
 export const isOpenPostTweetDialog = atom({
   key: "isOpenPostTweetDialog",
   default: false,
+});
+
+export const isOepnEditTweetDialog = atom({
+  key: "isOpenEditTweetDialog",
+  default: { tweetId: "", isOpen: false },
+});
+
+export const selectedTweetIdState = atom({
+  key: "selectedTweetIdState",
+  default: "",
 });

@@ -189,6 +189,9 @@ export default function Profile() {
     const { displayName, avatar } = validData;
     try {
       if (!user) return;
+
+      setIsAuthEdit(true);
+
       if (avatar && avatar.length > 0) {
         const file = avatar[0];
         const locationRef = ref(storage, `avatars/${user.uid}`);
@@ -202,7 +205,6 @@ export default function Profile() {
       }
 
       if (displayName !== user?.displayName) {
-        setIsAuthEdit(true);
         await updateProfile(user, {
           displayName,
         });
