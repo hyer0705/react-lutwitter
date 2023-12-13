@@ -9,3 +9,8 @@ export const showEditFormState = atom<IShowEditForm>({
   key: "showEditFormState",
   default: { tweetId: "", showEdit: false },
 });
+
+export const isOpenPostTweetDialog = atom({
+  key: "isOpenPostTweetDialog",
+  default: false,
+});

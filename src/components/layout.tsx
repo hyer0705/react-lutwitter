@@ -4,6 +4,7 @@ import { Outlet, useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import { auth } from "../firebase";
 import { isAuthEditState } from "../atom/authAtom";
+import PostTweetDialog from "./tweets/post-tweet-dialog";
 
 const Wrapper = styled.div`
   padding-right: 1rem;
@@ -42,20 +43,6 @@ const MenuItem = styled.li`
 const Svg = styled.svg`
   height: 24px;
   margin-right: 8px;
-`;
-
-const PostBtn = styled.button`
-  cursor: pointer;
-  width: 100%;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #000;
-  color: #fff;
-  font-weight: 600;
-  &:hover {
-    background-color: #222;
-  }
 `;
 
 const UserWrapper = styled.div`
@@ -221,7 +208,7 @@ export default function Layout() {
             </Link>
           </MenuItem>
         </Menu>
-        <PostBtn>POST</PostBtn>
+        <PostTweetDialog />
         <UserWrapper>
           <UserLeft>
             <Link to="/profile">

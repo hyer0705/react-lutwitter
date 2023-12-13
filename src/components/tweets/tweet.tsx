@@ -7,6 +7,7 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import EditTweetForm from "./edit-tweet-form";
 import { showEditFormState } from "../../atom/tweetAtom";
+import { CloseBtn, CloseBtnWrapper } from "./tweet-components";
 
 const Wrapper = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -78,21 +79,6 @@ const EditWrapper = styled.div`
   border-radius: 0.5rem;
   width: 360px;
   border: 1px solid #c9182b;
-`;
-
-const CloseBtnWrapper = styled.div`
-  padding: 0.5rem 1rem;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  background-color: #000;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-`;
-
-const CloseBtn = styled.svg`
-  height: 20px;
-  cursor: pointer;
 `;
 
 const ProfileImg = styled.img`
