@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { addDoc, collection, updateDoc } from "firebase/firestore";
@@ -13,6 +14,7 @@ import {
   TweetTextArea,
 } from "./tweet-components";
 import { maxFileSize } from "../../libs/form-validate";
+import { isOpenPostTweetDialog } from "../../atom/tweetAtom";
 
 const Wrapper = styled.div`
   width: 360px;
@@ -23,9 +25,11 @@ export interface ITweetForm {
   img?: FileList;
 }
 
-export default function PostTweetForm() {
+export default function PostTweetForm({ labelId }: { labelId: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<ITweetForm>();
+
+  const setIsOpenDialog = useSetRecoilState(isOpenPostTweetDialog);
 
   const onValid = async (validData: ITweetForm) => {
     const { tweet, img } = validData;
@@ -56,6 +60,7 @@ export default function PostTweetForm() {
       console.log(error);
     } finally {
       setIsLoading(false);
+      setIsOpenDialog(false);
     }
   };
 
@@ -78,7 +83,7 @@ export default function PostTweetForm() {
           })}
         />
         <TweetInputWrapper>
-          <ImgFileLabel htmlFor="tweet-img">
+          <ImgFileLabel htmlFor={labelId}>
             {watch("img")?.length === 1 ? (
               "Photo added ✅"
             ) : (
@@ -99,7 +104,7 @@ export default function PostTweetForm() {
             )}
           </ImgFileLabel>
           <ImgFileInput
-            id="tweet-img"
+            id={labelId}
             type="file"
             accept="image/*"
             {...register("img", {

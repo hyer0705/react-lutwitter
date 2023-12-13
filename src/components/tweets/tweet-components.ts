@@ -45,3 +45,18 @@ export const TweetPostBtn = styled.input`
     background-color: #222;
   }
 `;
+
+export const CloseBtnWrapper = styled.div`
+  padding: 0.5rem 1rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: #000;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+`;
+
+export const CloseBtn = styled.svg`
+  height: 20px;
+  cursor: pointer;
+`;

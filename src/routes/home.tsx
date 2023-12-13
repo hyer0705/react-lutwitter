@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 export default function Home() {
   return (
     <Wrapper>
-      <PostTweetForm />
+      <PostTweetForm labelId="tweet-img" />
       <Timeline />
     </Wrapper>
   );
