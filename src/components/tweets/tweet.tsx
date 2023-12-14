@@ -70,7 +70,14 @@ const ProfileImg = styled.img`
   overflow: hidden;
 `;
 
-export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
+export default function Tweet({
+  creatorId,
+  creatorName,
+  creatorAvatar,
+  photo,
+  tweet,
+  id,
+}: ITweet) {
   const user = auth.currentUser;
 
   return (
@@ -78,20 +85,20 @@ export default function Tweet({ username, userId, photo, tweet, id }: ITweet) {
       <Row>
         <Col>
           <ProfilePic>
-            {user?.photoURL ? (
+            {creatorAvatar ? (
               <ProfileImg
-                alt={`${user?.displayName}의 profile image`}
-                src={user?.photoURL || ""}
+                alt={`${creatorName}의 profile image`}
+                src={creatorAvatar || ""}
               />
             ) : null}
           </ProfilePic>
         </Col>
         <Col>
-          <UserName>{username}</UserName>
-          <UserId>{`@${userId.slice(0, 10)}`}</UserId>
+          <UserName>{creatorName}</UserName>
+          <UserId>{`@${creatorId.slice(0, 10)}`}</UserId>
         </Col>
         <Col>
-          {user?.uid === userId ? (
+          {user?.uid === creatorId ? (
             <>
               <DeleteTweetAlert id={id} photo={photo} />
               <EditTweetDialog id={id} />
