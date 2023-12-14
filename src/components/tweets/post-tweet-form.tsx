@@ -42,8 +42,9 @@ export default function PostTweetForm({ labelId }: { labelId: string }) {
       const doc = await addDoc(collection(db, "tweets"), {
         tweet,
         createdAt: Date.now(),
-        username: user.displayName || "익명",
-        userId: user.uid,
+        creatorName: user.displayName || "익명",
+        creatorId: user.uid,
+        creatorAvatar: user.photoURL,
       });
       if (img && img?.length > 0) {
         const locationRef = ref(storage, `tweets/${user.uid}/${doc.id}`);

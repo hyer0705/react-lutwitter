@@ -171,18 +171,31 @@ export default function Profile() {
     }
   };
 
-  const updateInTweets = async (displayName: string) => {
+  const updateTweets = async ({
+    displayName,
+    avatar,
+  }: {
+    displayName?: string;
+    avatar?: string;
+  }) => {
     const tweetsQuery = query(
       collection(db, "tweets"),
-      where("userId", "==", user?.uid)
+      where("creatorId", "==", user?.uid)
     );
     const querySnapshot = await getDocs(tweetsQuery);
 
     // 한 번에 update 하는 방법은? forEach를 사용하지 않는 방법은?
     querySnapshot.forEach(async (doc) => {
-      await updateDoc(doc.ref, {
-        username: displayName,
-      });
+      if (displayName) {
+        await updateDoc(doc.ref, {
+          creatorName: displayName,
+        });
+      }
+      if (avatar) {
+        await updateDoc(doc.ref, {
+          creatorAvatar: avatar,
+        });
+      }
     });
   };
   const onValid = async (validData: IEditProfileForm) => {
@@ -202,6 +215,8 @@ export default function Profile() {
         await updateProfile(user, {
           photoURL: avatarUrl,
         });
+
+        await updateTweets({ avatar: avatarUrl });
       }
 
       if (displayName !== user?.displayName) {
@@ -209,7 +224,7 @@ export default function Profile() {
           displayName,
         });
 
-        await updateInTweets(displayName);
+        await updateTweets({ displayName });
       }
     } catch (error) {
       console.log(error);
@@ -223,20 +238,22 @@ export default function Profile() {
   const fetchTweets = async () => {
     const tweetQuery = query(
       collection(db, "tweets"),
-      where("userId", "==", user?.uid),
+      where("creatorId", "==", user?.uid),
       orderBy("createdAt", "desc"),
       limit(25)
     );
 
     const snapshot = await getDocs(tweetQuery);
     const tweets = snapshot.docs.map((doc) => {
-      const { tweet, createdAt, userId, username, photo } = doc.data();
+      const { tweet, createdAt, creatorId, creatorName, creatorAvatar, photo } =
+        doc.data();
 
       return {
         tweet,
         createdAt,
-        userId,
-        username,
+        creatorId,
+        creatorName,
+        creatorAvatar,
         photo,
         id: doc.id,
       };

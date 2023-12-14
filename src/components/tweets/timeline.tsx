@@ -14,8 +14,9 @@ import { Unsubscribe } from "firebase/auth";
 export interface ITweet {
   id: string;
   tweet: string;
-  userId: string;
-  username: string;
+  creatorId: string;
+  creatorName: string;
+  creatorAvatar?: string;
   photo?: string;
   createdAt: number;
 }
@@ -43,11 +44,19 @@ export default function Timeline() {
 
       unsubscribe = await onSnapshot(tweetsQuery, (snapshot) => {
         const tweets = snapshot.docs.map((doc) => {
-          const { tweet, userId, username, photo, createdAt } = doc.data();
+          const {
+            tweet,
+            creatorId,
+            creatorName,
+            creatorAvatar,
+            photo,
+            createdAt,
+          } = doc.data();
           return {
             tweet,
-            userId,
-            username,
+            creatorId,
+            creatorName,
+            creatorAvatar,
             photo,
             createdAt,
             id: doc.id,
