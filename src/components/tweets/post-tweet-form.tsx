@@ -14,7 +14,7 @@ import {
   TweetTextArea,
 } from "./tweet-components";
 import { maxFileSize } from "../../libs/form-validate";
-import { isOpenPostTweetDialog } from "../../atom/tweetAtom";
+import { isOpenPostTweetDialog } from "../../recoil/tweetAtom";
 
 const Wrapper = styled.div`
   width: 360px;

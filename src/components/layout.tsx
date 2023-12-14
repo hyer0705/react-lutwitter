@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import { auth } from "../firebase";
-import { isAuthEditState } from "../atom/authAtom";
+import { isAuthEditState } from "../recoil/authAtom";
 import PostTweetDialog from "./tweets/post-tweet-dialog";
 
 const Wrapper = styled.div`

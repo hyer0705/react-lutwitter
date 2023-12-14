@@ -15,7 +15,7 @@ import {
 import { FirebaseError } from "@firebase/app";
 import GithubAuthButton from "../components/user/github-auth-button";
 import GoogleAuthButton from "../components/user/google-auth-button";
-import { isAuthEditState } from "../atom/authAtom";
+import { isAuthEditState } from "../recoil/authAtom";
 
 interface ILoginForm {
   email: string;

@@ -22,7 +22,7 @@ import { maxFileSize } from "../../libs/form-validate";
 import {
   isOepnEditTweetDialog,
   selectedTweetIdState,
-} from "../../atom/tweetAtom";
+} from "../../recoil/tweetAtom";
 
 export default function EditTweetForm() {
   const [isLoading, setIsLoading] = useState(false);

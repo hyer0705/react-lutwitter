@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { GithubAuthProvider, signInWithPopup } from "@firebase/auth";
 import { auth } from "../../firebase";
 import { Button, Logo } from "./auth-components";
-import { isAuthEditState } from "../../atom/authAtom";
+import { isAuthEditState } from "../../recoil/authAtom";
 
 export default function GithubAuthButton() {
   const navigate = useNavigate();

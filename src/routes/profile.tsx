@@ -17,7 +17,7 @@ import {
   where,
 } from "firebase/firestore";
 import Tweet from "../components/tweets/tweet";
-import { isAuthEditState } from "../atom/authAtom";
+import { isAuthEditState } from "../recoil/authAtom";
 
 const Wrapper = styled.div`
   height: 100%;

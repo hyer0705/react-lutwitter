@@ -2,7 +2,7 @@ import { useRecoilState } from "recoil";
 import * as Dialog from "@radix-ui/react-dialog";
 import styled from "styled-components";
 import PostTweetForm from "./post-tweet-form";
-import { isOpenPostTweetDialog } from "../../atom/tweetAtom";
+import { isOpenPostTweetDialog } from "../../recoil/tweetAtom";
 import {
   DialogCloseBtn,
   DialogContent,
