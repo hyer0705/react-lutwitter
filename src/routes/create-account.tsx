@@ -10,10 +10,10 @@ import {
   Switcher,
   Title,
   Wrapper,
-} from "../components/auth/auth-components";
+} from "../components/user/auth-components";
 import { FirebaseError } from "@firebase/app";
-import GithubAuthButton from "../components/auth/github-auth-button";
-import GoogleAuthButton from "../components/auth/google-auth-button";
+import GithubAuthButton from "../components/user/github-auth-button";
+import GoogleAuthButton from "../components/user/google-auth-button";
 
 interface ICreateAccountForm {
   name: string;
