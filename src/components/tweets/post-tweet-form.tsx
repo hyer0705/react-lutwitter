@@ -39,6 +39,7 @@ export default function PostTweetForm({ labelId }: { labelId: string }) {
 
     try {
       setIsLoading(true);
+
       const doc = await addDoc(collection(db, "tweets"), {
         tweet,
         createdAt: Date.now(),
