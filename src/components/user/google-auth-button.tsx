@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { GoogleAuthProvider, signInWithPopup } from "@firebase/auth";
 import { Button, Logo } from "./auth-components";
 import { auth } from "../../firebase";
-import { isAuthEditState } from "../../atom/authAtom";
+import { isAuthEditState } from "../../recoil/authAtom";
 
 export default function GoogleAuthButton() {
   const navigate = useNavigate();

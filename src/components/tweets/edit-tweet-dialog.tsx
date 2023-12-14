@@ -11,7 +11,7 @@ import EditTweetForm from "./edit-tweet-form";
 import {
   isOepnEditTweetDialog,
   selectedTweetIdState,
-} from "../../atom/tweetAtom";
+} from "../../recoil/tweetAtom";
 
 export default function EditTweetDialog({ id }: { id: string }) {
   const setSelectedTweetId = useSetRecoilState(selectedTweetIdState);

@@ -8,133 +8,18 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import { ITweet } from "../components/tweets/timeline";
 import {
+  Unsubscribe,
   collection,
   getDocs,
   limit,
+  onSnapshot,
   orderBy,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
 import Tweet from "../components/tweets/tweet";
-import { isAuthEditState } from "../atom/authAtom";
-
-const Wrapper = styled.div`
-  height: 100%;
-`;
-
-const ProfileBackground = styled.div`
-  background-color: rgb(227, 243, 172, 0.5);
-  width: 100%;
-  height: 7rem;
-`;
-const ProfileMain = styled.div`
-  padding: 0 1rem;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const ProfileAvatarWrapper = styled.div`
-  margin-top: 45px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-`;
-const ProfileAvatar = styled.div`
-  position: absolute;
-  top: -35px;
-  width: 70px;
-  height: 70px;
-  border: none;
-  border-radius: 50%;
-  background-color: #e3f3ac;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const ProfileAvatarImg = styled.img`
-  width: 90%;
-  height: 90%;
-  object-fit: cover;
-  overflow: hidden;
-  border-radius: 50%;
-`;
-const ProfileAvatarSvg = styled.svg`
-  width: 75%;
-  height: 75%;
-`;
-const ProfileUserInfo = styled.span`
-  &:nth-child(2) {
-    font-weight: 700;
-  }
-  &:last-child {
-    font-size: 12px;
-  }
-`;
-
-const ProfileEditBtn = styled.button`
-  padding: 0.2rem 0.8rem;
-  border: 1px solid #fff;
-  border-radius: 1rem;
-  background-color: inherit;
-  cursor: pointer;
-  color: #fff;
-`;
-
-const ProfileEditForm = styled.form`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-const ProfileAvatarLabel = styled.label`
-  position: absolute;
-  top: 5px;
-  left: 60px;
-  background-color: #aaad9b;
-  border-radius: 50%;
-  padding: 0.3rem;
-  cursor: pointer;
-  svg {
-    width: 25px;
-    height: 25px;
-  }
-`;
-const ProfileAvatarInput = styled.input`
-  display: none;
-`;
-
-const ProfileLabel = styled.label`
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-`;
-const ProfileUserInfoInput = styled.input`
-  border-radius: 1rem;
-  border: none;
-  padding: 0.3rem 0.8rem;
-`;
-
-const EditErrMsg = styled.span`
-  padding: 0.5rem 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: #c9182b;
-`;
-
-const Tweets = styled.div`
-  margin-top: 1rem;
-  padding-right: 1rem;
-  height: 74%;
-  display: grid;
-  gap: 1rem;
-  overflow-y: scroll;
-  grid-template-rows: 1fr 5fr;
-`;
+import { isAuthEditState } from "../recoil/authAtom";
 
 interface IEditProfileForm {
   avatar?: FileList;
@@ -145,6 +30,7 @@ export default function Profile() {
   const user = auth.currentUser;
 
   const setIsAuthEdit = useSetRecoilState(isAuthEditState);
+
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [isEditProfile, setIsEditProfile] = useState(false);
   const [tweets, setTweets] = useState<ITweet[]>([]);
@@ -230,41 +116,53 @@ export default function Profile() {
       console.log(error);
     } finally {
       setIsEditProfile(false);
-      fetchTweets();
       setIsAuthEdit(false);
     }
   };
 
-  const fetchTweets = async () => {
-    const tweetQuery = query(
-      collection(db, "tweets"),
-      where("creatorId", "==", user?.uid),
-      orderBy("createdAt", "desc"),
-      limit(25)
-    );
-
-    const snapshot = await getDocs(tweetQuery);
-    const tweets = snapshot.docs.map((doc) => {
-      const { tweet, createdAt, creatorId, creatorName, creatorAvatar, photo } =
-        doc.data();
-
-      return {
-        tweet,
-        createdAt,
-        creatorId,
-        creatorName,
-        creatorAvatar,
-        photo,
-        id: doc.id,
-      };
-    });
-
-    setTweets(tweets);
-  };
-
   useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+
+    const fetchTweets = async () => {
+      const tweetQuery = query(
+        collection(db, "tweets"),
+        where("creatorId", "==", user?.uid),
+        orderBy("createdAt", "desc"),
+        limit(25)
+      );
+
+      unsubscribe = await onSnapshot(tweetQuery, (snapshot) => {
+        const tweets = snapshot.docs.map((doc) => {
+          const {
+            tweet,
+            creatorId,
+            creatorName,
+            creatorAvatar,
+            photo,
+            createdAt,
+          } = doc.data();
+
+          return {
+            tweet,
+            creatorId,
+            creatorName,
+            creatorAvatar,
+            photo,
+            createdAt,
+            id: doc.id,
+          };
+        });
+
+        setTweets(tweets);
+      });
+    };
+
     fetchTweets();
-  }, []);
+
+    return () => {
+      unsubscribe && unsubscribe();
+    };
+  }, [user?.uid]);
 
   return (
     <Wrapper>
@@ -389,3 +287,120 @@ export default function Profile() {
     </Wrapper>
   );
 }
+
+const Wrapper = styled.div`
+  height: 100%;
+`;
+
+const ProfileBackground = styled.div`
+  background-color: rgb(227, 243, 172, 0.5);
+  width: 100%;
+  height: 7rem;
+`;
+const ProfileMain = styled.div`
+  padding: 0 1rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const ProfileAvatarWrapper = styled.div`
+  margin-top: 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+`;
+const ProfileAvatar = styled.div`
+  position: absolute;
+  top: -35px;
+  width: 70px;
+  height: 70px;
+  border: none;
+  border-radius: 50%;
+  background-color: #e3f3ac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const ProfileAvatarImg = styled.img`
+  width: 90%;
+  height: 90%;
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: 50%;
+`;
+const ProfileAvatarSvg = styled.svg`
+  width: 75%;
+  height: 75%;
+`;
+const ProfileUserInfo = styled.span`
+  &:nth-child(2) {
+    font-weight: 700;
+  }
+  &:last-child {
+    font-size: 12px;
+  }
+`;
+
+const ProfileEditBtn = styled.button`
+  padding: 0.2rem 0.8rem;
+  border: 1px solid #fff;
+  border-radius: 1rem;
+  background-color: inherit;
+  cursor: pointer;
+  color: #fff;
+`;
+
+const ProfileEditForm = styled.form`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const ProfileAvatarLabel = styled.label`
+  position: absolute;
+  top: 5px;
+  left: 60px;
+  background-color: #aaad9b;
+  border-radius: 50%;
+  padding: 0.3rem;
+  cursor: pointer;
+  svg {
+    width: 25px;
+    height: 25px;
+  }
+`;
+const ProfileAvatarInput = styled.input`
+  display: none;
+`;
+
+const ProfileLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+const ProfileUserInfoInput = styled.input`
+  border-radius: 1rem;
+  border: none;
+  padding: 0.3rem 0.8rem;
+`;
+
+const EditErrMsg = styled.span`
+  padding: 0.5rem 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c9182b;
+`;
+
+const Tweets = styled.div`
+  margin-top: 1rem;
+  padding-right: 1rem;
+  height: 74%;
+  display: grid;
+  gap: 1rem;
+  overflow-y: scroll;
+  grid-template-rows: 1fr 5fr;
+`;

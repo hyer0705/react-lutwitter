@@ -22,7 +22,7 @@ import { maxFileSize } from "../../libs/form-validate";
 import {
   isOepnEditTweetDialog,
   selectedTweetIdState,
-} from "../../atom/tweetAtom";
+} from "../../recoil/tweetAtom";
 
 export default function EditTweetForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -44,10 +44,11 @@ export default function EditTweetForm() {
 
     try {
       setIsLoading(true);
+
+      // 좀 더 좋은 로직은 없을지 추후 고민
       await updateDoc(doc(db, "tweets", selectedTweetId), {
         tweet,
       });
-
       if (img && img.length > 0) {
         const imgRef = ref(storage, `tweets/${user.uid}/${selectedTweetId}`);
 

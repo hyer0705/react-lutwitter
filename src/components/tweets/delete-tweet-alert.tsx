@@ -75,6 +75,7 @@ export default function DeleteTweetAlert({
     if (!user) return;
     try {
       await deleteDoc(doc(db, "tweets", id));
+
       if (photo) {
         const photoRef = ref(storage, `tweets/${user.uid}/${id}`);
         await deleteObject(photoRef);
